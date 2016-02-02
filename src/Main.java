@@ -29,6 +29,15 @@ public class Main {
                     removeAnimal();
                     break;
 
+                case 4:
+                    option = 4;
+                    searchAnimals();
+                    break;
+
+                case 10:
+                    option = 0;
+                    System.exit(0);
+
                 default:
                     return;
             }
@@ -45,6 +54,8 @@ public class Main {
         System.out.println("1. Add animal------------------------------------");
         System.out.println("2. list animals----------------------------------");
         System.out.println("3. remove animal---------------------------------");
+        System.out.println("4. find animal-----------------------------------");
+        System.out.println("0. exit------------------------------------------");
 
         Scanner menu = new Scanner(System.in);
         int option = menu.nextInt();
@@ -102,5 +113,24 @@ public class Main {
         choice = input.nextInt();
         animals.remove(choice);
     }
-}
 
+    static void searchAnimals() {
+        Animals animals = Animals.getInstance();
+        System.out.println("1. Search Type of Animal-------------");
+        System.out.println("2. Search Name of Animal-------------");
+        Scanner input = new Scanner(System.in);
+        int animalSearchOption = input.nextInt();
+
+        switch (animalSearchOption) {
+            case 1:
+                animalSearchOption = 1;
+                System.out.println("searchByType"); //Stubbed
+                break;
+
+            case 2:
+                animalSearchOption = 2;
+                System.out.println("searchByName"); //Stubbed
+                break;
+        }
+    }
+}
