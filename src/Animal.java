@@ -1,17 +1,26 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by carlos.ochoa on 2/1/2016.
  */
-public class Animal {
+public class Animal implements Serializable {
+    private int animalNumber;
     private String type;
     private String name;
-    private int health;
+    private AnimalHealthStatus health;
     private int age;
     private String enclosure;
     private boolean onLoan;
     private String loanLocation;
-    private ArrayList animals = new ArrayList();
+
+    public int getAnimalNumber() {
+        return animalNumber;
+    }
+
+    public void setAnimalNumber(int animalNumber) {
+        this.animalNumber = animalNumber;
+    }
 
     public String getType() {
         return type;
@@ -29,11 +38,11 @@ public class Animal {
         this.name = name;
     }
 
-    public int getHealth() {
+    public AnimalHealthStatus getHealth() {
         return health;
     }
 
-    public void setHealth(int health) {
+    public void setHealth(AnimalHealthStatus health) {
         this.health = health;
     }
 
@@ -69,11 +78,24 @@ public class Animal {
         this.loanLocation = loanLocation;
     }
 
-    public ArrayList getAnimals() {
-        return animals;
+    @Override
+    public String toString() {
+        return String.valueOf(new StringBuffer("Animal Number: ")
+                .append(this.animalNumber)
+                .append("Name: ")
+                .append(this.name)
+                .append("Type: ")
+                .append(this.type)
+                .append("Health: ")
+                .append(this.health)
+                .append("Age: ")
+                .append(this.age)
+                .append("On loan: ")
+                .append(this.onLoan)
+                .append("Enclosure: ")
+                .append(this.enclosure)
+                .append("Loan location: ")
+                .append(this.loanLocation));
     }
 
-    public void setAnimals(ArrayList animals) {
-        this.animals = animals;
-    }
 }
