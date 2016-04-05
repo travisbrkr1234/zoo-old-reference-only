@@ -1,136 +1,402 @@
-import java.util.ArrayList;
+import java.io.*;
+import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by carlos.ochoa on 2/1/2016.
  */
 public class Main {
+    static File fileLocation = new File("c:\\data\\animals.ser");
+
+    static void checkForFile() {
+        try {
+            if (fileLocation.exists()) {
+                System.out.println("Animal file initialized");
+            } else {
+                System.out.println("No animal file found, creating new animal file");
+                fileLocation.createNewFile();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    final static StringBuilder zooMenu = new StringBuilder();
+//    final static StringBuilder animalAttributes = new StringBuilder();
 
     public static void main(String[] args) {
 
-        int option = -1;
+//        checkForFile();
+        AnimalDataBase.initializeDataBase();
+        System.out.println("initializing database");
 
-        while (option != 0) {
+        if (AnimalDataBase.checkForAnimals()) {
+            AnimalDataBase.insertSeedData();
+            System.out.println("Inserted data");
+        }
+
+        zooMenu.append("-------------------------------------------------\n")
+                .append("********000000*******0000*****0000***************\n")
+                .append("***********//*******0****0***0****0**************\n")
+                .append("**********000000*****0000*****0000***************\n")
+                .append("-------------------------------------------------\n")
+                .append("-------------Please enter a choice---------------\n")
+                .append("1. Add animal------------------------------------\n")
+                .append("2. List animals----------------------------------\n")
+                .append("3. Remove animal---------------------------------\n")
+                .append("4. Find animal-----------------------------------\n")
+                .append("5. Read Animals from file------------------------\n")
+                .append("9. Initialize Database---------------------------\n")
+                .append("----Type e, exit, q, or quit to leave program----\n");
+
+        boolean run = true;
+        String option;
+
+        while (run) {
             option = menu();
 
             switch (option) {
-                case 1:
-                    option = 1;
+                case "1":
                     createAnimal();
                     break;
 
-                case 2:
-                    option = 2;
+                case "2":
                     listAnimals();
                     break;
 
-                case 3:
-                    option = 3;
+                case "3":
                     removeAnimal();
                     break;
 
-                case 4:
-                    option = 4;
+                case "4":
                     searchAnimals();
                     break;
 
-                case 10:
-                    option = 0;
-                    System.exit(0);
+                case "5":
+                    readAnimalsFromFile();
+                    break;
+
+                case "9":
+                    AnimalDataBase.initializeDataBase();
+                    break;
+
+                case "e":
+                case "exit":
+                case "q":
+                case "quit":
+                    run = false;
+                    break;
 
                 default:
-                    return;
+                    System.out.println("Please enter a valid option");
             }
         }
     }
 
-    static int menu() {
-        System.out.println("-------------------------------------------------");
-        System.out.println("***********000000*******0000*****0000************");
-        System.out.println("**************//*******0****0***0****0***********");
-        System.out.println("*************0000000****0000*****0000************");
-        System.out.println("-------------------------------------------------");
-        System.out.println("-------------Please enter a choice---------------");
-        System.out.println("1. Add animal------------------------------------");
-        System.out.println("2. list animals----------------------------------");
-        System.out.println("3. remove animal---------------------------------");
-        System.out.println("4. find animal-----------------------------------");
-        System.out.println("0. exit------------------------------------------");
+    static String menu() {
+        System.out.println(zooMenu.toString());
 
         Scanner menu = new Scanner(System.in);
-        int option = menu.nextInt();
-        return option;
+        return menu.nextLine();
+    }
+
+    static boolean animalTypeValidation(String animalType) {
+        final String regexPattern = "^[a-zA-z]+(-+[a-zA-Z]+)?$";
+        final Pattern pattern = Pattern.compile(regexPattern);
+        final Matcher matcher = pattern.matcher(animalType);
+        return matcher.find();
     }
 
     static void createAnimal() {
         Animals animals = Animals.getInstance();
         Animal newAnimal = new Animal();
 
-        System.out.println("Please enter a type for this animal");
-        Scanner animalType = new Scanner(System.in);
-        newAnimal.setType(animalType.nextLine());
-        //System.out.println("Your animal has the type of: " + animal.getType());
+        Scanner inputAnimalName = new Scanner(System.in);
+        final String regexNamePattern = "\\b[a-zA-Z]+\\b";
+        Pattern namePattern = Pattern.compile(regexNamePattern);
 
-        System.out.println("Please enter a name for this animal");
-        Scanner animalName = new Scanner(System.in);
-        newAnimal.setName(animalName.nextLine());
-        //System.out.println("Your animal has the name of: " + animal.getName());
+        boolean flag = false;
 
-        System.out.println("Health status: ");
-        System.out.println("1 - Good health\n" +
-                "2 - Mediocre health\n" +
-                "3 - Bad health\n" +
-                "4 - Pregnant");
-        Scanner animalHealth = new Scanner(System.in);
-        newAnimal.setHealth(animalHealth.nextInt());
+        while (!flag) {
+            System.out.println("Please enter the animal's name: ");
+            String animalName = inputAnimalName.nextLine();
+            Matcher matcher = namePattern.matcher(animalName);
 
-        System.out.println("age: ");
-        Scanner animalAge = new Scanner(System.in);
-        newAnimal.setAge(animalAge.nextInt());
+            if (matcher.find()) {
+                newAnimal.setName(animalName);
+                flag = true;
+            } else {
+                System.out.println("Please enter the animal's name such as 'Larry' ");
+            }
 
-        System.out.println("on loan? true or false");
-        Scanner animalStatus = new Scanner(System.in);
-        newAnimal.setOnLoan(animalStatus.nextBoolean());
+        }
 
-        System.out.println("enclosure: ");
-        Scanner animalEnclosure = new Scanner(System.in);
-        newAnimal.setEnclosure(animalEnclosure.nextLine());
+        Scanner animalTypeInput = new Scanner(System.in);
 
-        animals.add(newAnimal);
-    }
+        boolean something = false;
+        while(!something) {
+            System.out.println("Please enter a type for this animal");
+            String animalType = animalTypeInput.nextLine();
 
-    static void listAnimals() {
-        Animals animals = Animals.getInstance();
-        animals.listAll();
+            if (animalTypeValidation(animalType)) {
+                newAnimal.setType(animalType);
+                something = true;
+            } else {
+                System.out.println("Please enter a valid type, such as\n hipa-potamus");
+            }
+
+
+        }
+
+        boolean animalHealthSet = false;
+        Scanner animalHealthInput = new Scanner(System.in);  //take user input
+
+        while (!animalHealthSet) {
+            System.out.println("Health status: ");
+            System.out.println("1 - Good health\n" +
+                    "2 - Mediocre health\n" +
+                    "3 - Bad health\n" +
+                    "4 - Pregnant");
+            try {
+                int statusCode = animalHealthInput.nextInt();
+
+                if (AnimalHealthStatus.animalHealthStatusExists(statusCode)) {
+                    newAnimal.setHealth(AnimalHealthStatus.getAnimalHealthStatusByStatusCode(statusCode));
+                    animalHealthSet = true;
+                } else {
+                    System.out.println("Please enter a valid choice for health");
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println("Please enter a health status code");
+                animalHealthInput.nextLine();
+            }
+        }
+
+        // do validation similar to new animal
+        Scanner inputAnimalAge = new Scanner(System.in);
+        String animalAgePattern = "^\\d+$";
+        Pattern pattern = Pattern.compile(animalAgePattern);
+
+        boolean userInputAnimalAgeSet = false;
+
+        while (!userInputAnimalAgeSet) {
+            System.out.println("Animal Age: ");
+            String animalAge = inputAnimalAge.nextLine();
+            Matcher matcher = pattern.matcher(animalAge);
+            //create least amount of objects each time
+
+            if (matcher.find()) {
+                newAnimal.setAge(Integer.parseInt(animalAge));
+                userInputAnimalAgeSet = true;
+            } else {
+                System.out.println("Please enter a valid choice for animal age");
+            }
+
+        }
+
+        /*Animal Loan Status*/
+        Scanner inputAnimalLoanStatus = new Scanner(System.in);
+
+        boolean userInputAnimalLoanStatusSet = false;
+
+        while (!userInputAnimalLoanStatusSet) {
+            System.out.println("Is the animal on loan to another zoo? Enter 'true' or 'false' ");
+            String animalLoanStatus = inputAnimalLoanStatus.nextLine();
+
+            if (animalLoanStatus.equalsIgnoreCase("true") || animalLoanStatus.equalsIgnoreCase("false")) {
+                newAnimal.setOnLoan(Boolean.parseBoolean(animalLoanStatus));
+                userInputAnimalLoanStatusSet = true;
+            } else {
+                System.out.println("Is the animal on loan to another zoo? Enter 'true' or 'false' ");
+            }
+
+        }
+
+            /*Animal loan location*/
+        if (newAnimal.isOnLoan()) {
+            Scanner inputAnimalLoanLocation = new Scanner(System.in);
+            String animalLoanLocationRegex = "([A-Za-z]+){2,}(: [A-Za-z]+)?";
+            Pattern animalLoanLocationPattern = Pattern.compile((animalLoanLocationRegex), Pattern.CASE_INSENSITIVE);
+
+            boolean userInputAnimalLoanLocationSet = false;
+
+            while (!userInputAnimalLoanLocationSet) {
+                System.out.println("What zoo is this animal on loan to?");
+                String animalLoanLocation = inputAnimalLoanLocation.nextLine();
+                Matcher matcher = animalLoanLocationPattern.matcher(animalLoanLocation);
+
+                if (matcher.find()) {
+                    newAnimal.setLoanLocation(animalLoanLocation);
+
+                    userInputAnimalLoanLocationSet = true;
+                } else {
+                    System.out.println("Invalid location. ex. lincoln: park zoo");
+                }
+
+            }
+        }
+
+        /*Animal Enclosure*/
+        Scanner userInputAnimalEnclosure = new Scanner(System.in);
+
+        boolean animalEnclosureSet = false;
+
+        while (!animalEnclosureSet) {
+            System.out.println("Which enclosure is this animal in?\nPen, Cage, Window");
+
+            String animalEnclosure = userInputAnimalEnclosure.nextLine();
+
+            if (animalEnclosure.equalsIgnoreCase("pen") || animalEnclosure.equalsIgnoreCase("cage") || animalEnclosure.equals("window")) {
+                newAnimal.setEnclosure(animalEnclosure);
+                animalEnclosureSet = true;
+            } else {
+                System.out.println("Please enter a valid enclosure\n" +
+                        "Pen\n" +
+                        "Cage\n" +
+                        "Window");
+            }
+
+            newAnimal.setAnimalNumber(animals.size() + 1);
+
+            animals.add(newAnimal);
+            AnimalDataBase.saveAnimalToDB(newAnimal);
+
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(fileLocation);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+                objectOutputStream.writeObject(newAnimal);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     static void removeAnimal() {
+
         Animals animals = Animals.getInstance();
-        int choice;
-        listAnimals();
-        Scanner input = new Scanner(System.in);
-        System.out.println("Which animal do you want to remove?");
-        choice = input.nextInt();
-        animals.remove(choice);
+        if (!animals.isEmpty()) {
+            int choice;
+            listAnimals();
+
+            Scanner input = new Scanner(System.in);
+            System.out.println("\nWhich animal do you want to remove?");
+            choice = input.nextInt();
+
+            try {
+                animals.remove(choice);
+            }catch (Exception exception) {
+                System.out.println("Invalid choice, please select one of the following choices: ");
+            }
+
+        } else {
+            transitionTimer("No animals exist, please add an animal before removing any.", 5);
+        }
+
     }
 
     static void searchAnimals() {
         Animals animals = Animals.getInstance();
-        System.out.println("1. Search Type of Animal-------------");
-        System.out.println("2. Search Name of Animal-------------");
-        Scanner input = new Scanner(System.in);
-        int animalSearchOption = input.nextInt();
 
-        switch (animalSearchOption) {
-            case 1:
-                animalSearchOption = 1;
-                System.out.println("searchByType"); //Stubbed
-                break;
+        boolean flag = false;
 
-            case 2:
-                animalSearchOption = 2;
-                System.out.println("searchByName"); //Stubbed
-                break;
+        if (!animals.isEmpty()) {
+            System.out.println("Please enter an option to search by");
+            System.out.println("1. -------------Search Type of Animal-------------");
+            System.out.println("2. -------------Search Name of Animal-------------");
+            Scanner searchChoice = new Scanner(System.in);
+            while (!flag) {
+                try {
+                    int animalSearchOption = searchChoice.nextInt();
+
+                    switch (animalSearchOption) {
+                        case 1:
+                            System.out.println("Please enter a type of animal to search by: ");
+                            Scanner animalTypeUserInput = new Scanner(System.in);
+                            String typeInput = animalTypeUserInput.nextLine();
+                            System.out.println("Running Search");
+                            animals.listByType(typeInput);
+                            flag = true;
+                            break;
+
+                        case 2:
+                            System.out.println("Please enter the name of the \nanimal that you would like to find.");
+                            Scanner animalNameUserInput = new Scanner(System.in);
+                            String nameInput = animalNameUserInput.nextLine();
+                            System.out.println("Running Search");
+                            animals.listByName(nameInput);
+                            flag = true;
+                            break;
+
+                        default:
+                            System.out.println("Please enter a valid option");
+                    }
+                } catch (InputMismatchException e) {
+                    searchChoice.nextLine();
+
+                }
+            }
+        } else {
+            transitionTimer("No animals exist, please add an animal first.", 5);
         }
     }
+
+    static void readAnimalsFromFile() {
+        Animal a;
+        try {
+            FileInputStream fileIn = new FileInputStream(fileLocation);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            a = (Animal) in.readObject();
+            in.close();
+            fileIn.close();
+        } catch (IOException i) {
+            i.printStackTrace();
+            return;
+        } catch (ClassNotFoundException c) {
+            System.out.println("Animal class not found");
+            c.printStackTrace();
+            return;
+        }
+        System.out.println("Deserialized Animal...");
+        System.out.println("Number: " + a.getAnimalNumber());
+        System.out.println("Name: " + a.getName());
+        System.out.println("Type: " + a.getType());
+        System.out.println("Health: " + a.getHealth());
+        System.out.println("Age: " + a.getAge());
+        System.out.println("On loan: " + a.isOnLoan());
+        System.out.println("Enclosure: " + a.getEnclosure());
+        System.out.println("Loan location: " + a.getLoanLocation());
+    }
+
+    static void transitionTimer(String message, int timeout) {
+        /**
+         * @param message Used to pass a message to the console for the transition
+         * @param timeout Timout transition in seconds
+         */
+        try {
+            System.out.println(message);
+            System.out.println("returning to main menu in: ");
+            for (int i = timeout; i >=1; i--) {
+                System.out.println(i);
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    static void listAnimals() {
+        if (AnimalDataBase.checkForAnimals()) {
+            AnimalDataBase.showAnimalsInDB();
+        } else {
+            transitionTimer("No animals exist, please add an animal first.", 5);
+        }
+    }
+
 }
