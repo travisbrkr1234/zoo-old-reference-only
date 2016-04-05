@@ -5,15 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Create io fileLocation to write out and store animal inventory
- * NEXT Finish creating an animal method
- * Questions
- * How do I remove by my int animalNumber?
- * How do I return Enum value of?
- */
-
-/*TODO fix underscore in animal type, implement animal name, check on allowing colons in animal loan location*/
-/**
  * Created by carlos.ochoa on 2/1/2016.
  */
 public class Main {
@@ -35,7 +26,7 @@ public class Main {
     }
 
     final static StringBuilder zooMenu = new StringBuilder();
-    final static StringBuilder animalAttributes = new StringBuilder();
+//    final static StringBuilder animalAttributes = new StringBuilder();
 
     public static void main(String[] args) {
 
@@ -407,15 +398,5 @@ public class Main {
             transitionTimer("No animals exist, please add an animal first.", 5);
         }
     }
-
-    //    static void OLDlistAnimals() {
-//        Animals animals = Animals.getInstance();
-//        if (!animals.isEmpty()) {
-////            animals.listAll();
-//            AnimalDataBase.showAnimalsInDB();
-//        } else {
-//            transitionTimer("No animals exist, please add an animal first.", 5);
-//        }
-//    }
 
 }
