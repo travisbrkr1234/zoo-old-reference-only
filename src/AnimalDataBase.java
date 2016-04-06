@@ -147,19 +147,16 @@ public class AnimalDataBase {
             System.out.println("Records created successfully");
         }
 
-        public static void showAnimalsInDB() {
+        public static List<Animal> showAnimalsInDB() {
             List<Animal> animals = new ArrayList<>();
-            Connection c = null;
-            Statement stmt = null;
+            Animal animal = new Animal();
+
+            String sql = "SELECT * FROM ANIMAL;";
 
             try {
-                Class.forName("org.sqlite.JDBC");
-                c = DriverManager.getConnection("jdbc:sqlite:animals.db");
-                c.setAutoCommit(false);
-                System.out.println("Opened database successfully");
+                connectToDatabase();
+                ResultSet resultSet = statement.executeQuery(sql);
 
-                stmt = c.createStatement();
-                ResultSet resultSet = stmt.executeQuery("SELECT * FROM ANIMAL;");
                 while (resultSet.next()) {
                     int animalNumber = resultSet.getInt("NUMBER");
                     String name = resultSet.getString("NAME");
@@ -176,31 +173,34 @@ public class AnimalDataBase {
                     System.out.println("Enclosure = " + enclosure);
                     System.out.println("On Loan = " + onLoan);
                     System.out.println("Loan Location = " + loanLocation);
+
+                    animal.setAnimalNumber(animalNumber);
+                    animal.setName(name);
+                    animal.setHealth(AnimalHealthStatus.valueOf(health));
+                    animal.setAge(age);
+                    animal.setEnclosure(enclosure);
+                    animal.setOnLoan(onLoan);
+                    animal.setLoanLocation(loanLocation);
+
+                    animals.add(animal);
+
                     //Add animals to list
                     // Fix other methods to do just their job
                 }
-                stmt.close();
-                c.commit();
-                c.close();
+                closeConnectionToDatabase();
 
             } catch (Exception e) {
                 System.err.println("There was a problem showing animals" +e.getClass().getName() + ": " + e.getMessage());
-//            System.exit(0);
             }
-
+            return animals;
         }
 
         public static boolean checkForAnimals() {
-            Connection c = null;
-            Statement stmt = null;
-            try {
-                Class.forName("org.sqlite.JDBC");
-                c = DriverManager.getConnection("jdbc:sqlite:animals.db");
-                c.setAutoCommit(false);
-                System.out.println("Opened database successfully");
 
-                stmt = c.createStatement();
-                ResultSet resultSet = stmt.executeQuery("SELECT * FROM ANIMAL;");
+            try {
+                connectToDatabase();
+
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM ANIMAL;");
                 while (resultSet.next()) {
                     int animalNumber = resultSet.getInt("NUMBER");
                     String name = resultSet.getString("NAME");
@@ -220,13 +220,10 @@ public class AnimalDataBase {
                     System.out.println("Loan Location = " + loanLocation);
                     System.out.println(" ");
                 }
-                stmt.close();
-                c.commit();
-                c.close();
+                closeConnectionToDatabase();
 
             } catch (Exception e) {
                 System.err.println("Unable to check for animals" + e.getClass().getName() + ": " + e.getMessage());
-//            System.exit(0);
             }
 
             return true;
