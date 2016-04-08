@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,36 +11,16 @@ import java.util.regex.Pattern;
 public class Main {
     static File fileLocation = new File("c:\\data\\animals.ser");
 
-    static void checkForFile() {
-        try {
-            if (fileLocation.exists()) {
-                System.out.println("Animal file initialized");
-            } else {
-                System.out.println("No animal file found, creating new animal file");
-                fileLocation.createNewFile();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     final static StringBuilder zooMenu = new StringBuilder();
-//    final static StringBuilder animalAttributes = new StringBuilder();
 
     public static void main(String[] args) {
 
-//        checkForFile();
-        AnimalDataBase.initializeDataBase();
-        System.out.println("initializing database");
-
-        if (AnimalDataBase.checkForAnimals()) {
-            AnimalDataBase.insertSeedData();
-            System.out.println("Inserted data");
+        if (!AnimalDataBase.checkForAnimals()) {
+            AnimalDataBase.initializeDataBase();
+            System.out.println("initialized database");
         }
 
-        zooMenu.append("-------------------------------------------------\n")
+        zooMenu.append("--------------------------------------------------\n")
                 .append("********000000*******0000*****0000***************\n")
                 .append("***********//*******0****0***0****0**************\n")
                 .append("**********000000*****0000*****0000***************\n")
@@ -49,7 +30,6 @@ public class Main {
                 .append("2. List animals----------------------------------\n")
                 .append("3. Remove animal---------------------------------\n")
                 .append("4. Find animal-----------------------------------\n")
-                .append("5. Read Animals from file------------------------\n")
                 .append("9. Initialize Database---------------------------\n")
                 .append("----Type e, exit, q, or quit to leave program----\n");
 
@@ -74,10 +54,6 @@ public class Main {
 
                 case "4":
                     searchAnimals();
-                    break;
-
-                case "5":
-                    readAnimalsFromFile();
                     break;
 
                 case "9":
@@ -346,33 +322,6 @@ public class Main {
         }
     }
 
-    static void readAnimalsFromFile() {
-        Animal a;
-        try {
-            FileInputStream fileIn = new FileInputStream(fileLocation);
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            a = (Animal) in.readObject();
-            in.close();
-            fileIn.close();
-        } catch (IOException i) {
-            i.printStackTrace();
-            return;
-        } catch (ClassNotFoundException c) {
-            System.out.println("Animal class not found");
-            c.printStackTrace();
-            return;
-        }
-        System.out.println("Deserialized Animal...");
-        System.out.println("Number: " + a.getAnimalNumber());
-        System.out.println("Name: " + a.getName());
-        System.out.println("Type: " + a.getType());
-        System.out.println("Health: " + a.getHealth());
-        System.out.println("Age: " + a.getAge());
-        System.out.println("On loan: " + a.isOnLoan());
-        System.out.println("Enclosure: " + a.getEnclosure());
-        System.out.println("Loan location: " + a.getLoanLocation());
-    }
-
     static void transitionTimer(String message, int timeout) {
         /**
          * @param message Used to pass a message to the console for the transition
@@ -393,7 +342,9 @@ public class Main {
 
     static void listAnimals() {
         if (AnimalDataBase.checkForAnimals()) {
-            AnimalDataBase.showAnimalsInDB();
+            List animals = AnimalDataBase.showAnimalsInDB();
+            animals.forEach(System.out::println);
+
         } else {
             transitionTimer("No animals exist, please add an animal first.", 5);
         }
