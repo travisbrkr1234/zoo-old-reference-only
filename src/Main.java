@@ -28,6 +28,7 @@ public class Main {
                 .append("-------------Please enter a choice---------------\n")
                 .append("1. Add animal------------------------------------\n")
                 .append("2. List animals----------------------------------\n")
+                .append("6. sel all animals-------------------------------\n")
                 .append("3. Remove animal---------------------------------\n")
                 .append("4. Find animal-----------------------------------\n")
                 .append("9. Initialize Database---------------------------\n")
@@ -54,6 +55,10 @@ public class Main {
 
                 case "4":
                     searchAnimals();
+                    break;
+
+                case "6":
+                    allMyAnimals();
                     break;
 
                 case "9":
@@ -342,12 +347,13 @@ public class Main {
 
     static void listAnimals() {
         if (AnimalDataBase.checkForAnimals()) {
-            List animals = AnimalDataBase.showAnimalsInDB();
-            animals.forEach(System.out::println);
+            List<Animal> animals = AnimalDataBase.showAnimalsInDB();
 
-        } else {
-            transitionTimer("No animals exist, please add an animal first.", 5);
+            animals.forEach(System.out::println);
         }
     }
 
+    static void allMyAnimals() {
+        AnimalDataBase.selectAllAnimals();
+    }
 }

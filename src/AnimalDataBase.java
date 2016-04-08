@@ -130,33 +130,25 @@ public class AnimalDataBase {
 
     public static List<Animal> showAnimalsInDB() {
         List<Animal> animals = new ArrayList<>();
-        Animal animal = new Animal();
 
         String sql = "SELECT * FROM ANIMAL;";
 
         try {
             connectToDatabase();
+
             ResultSet resultSet = statement.executeQuery(sql);
 
-            System.out.println(resultSet);
-
             while (resultSet.next()) {
-                animal.setAnimalNumber(resultSet.getInt("NUMBER"));
-                animal.setName(resultSet.getString("NAME"));
-                animal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("HEALTH")));
-                animal.setAge(resultSet.getInt("AGE"));
-                animal.setEnclosure(resultSet.getString("enclosure"));
-                animal.setOnLoan(resultSet.getBoolean("ON_LOAN"));
-                animal.setLoanLocation(resultSet.getString("LOAN_LOCATION"));
-//                System.out.println("ID = " + animalNumber);
-//                System.out.println("Name = " + name);
-//                System.out.println("Health = " + health);
-//                System.out.println("Age = " + age);
-//                System.out.println("Enclosure = " + enclosure);
-//                System.out.println("On Loan = " + onLoan);
-//                System.out.println("Loan Location = " + loanLocation);
+                Animal newAnimal = new Animal();
+                newAnimal.setAnimalNumber(resultSet.getInt("NUMBER"));
+                newAnimal.setName(resultSet.getString("NAME"));
+                newAnimal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("HEALTH")));
+                newAnimal.setAge(resultSet.getInt("AGE"));
+                newAnimal.setEnclosure(resultSet.getString("enclosure"));
+                newAnimal.setOnLoan(resultSet.getBoolean("ON_LOAN"));
+                newAnimal.setLoanLocation(resultSet.getString("LOAN_LOCATION"));
 
-                animals.add(animal);
+                animals.add(newAnimal);
             }
             closeConnectionToDatabase();
 
