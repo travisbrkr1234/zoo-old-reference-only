@@ -8,6 +8,7 @@ import java.util.List;
 public class AnimalDataBase {
     private static Connection connection = null;
     private static Statement statement = null;
+    private static PreparedStatement preparedStatement = null;
 
     static public void connectToDatabase() {
 
@@ -63,7 +64,6 @@ public class AnimalDataBase {
         }
     }
 
-
     static public void selectAllAnimals() {
         /**
          * Select all animals from animal database
@@ -103,7 +103,6 @@ public class AnimalDataBase {
 
         } catch (Exception e) {
             System.err.println("Unable to select animals" + e.getClass().getName() + ": " + e.getMessage());
-//            System.exit(0);
         }
     }
 
@@ -138,26 +137,13 @@ public class AnimalDataBase {
 
             ResultSet resultSet = statement.executeQuery(sql);
 
-            while (resultSet.next()) {
-                Animal newAnimal = new Animal();
-                newAnimal.setAnimalNumber(resultSet.getInt("NUMBER"));
-                newAnimal.setName(resultSet.getString("NAME"));
-                newAnimal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("HEALTH")));
-                newAnimal.setAge(resultSet.getInt("AGE"));
-                newAnimal.setEnclosure(resultSet.getString("enclosure"));
-                newAnimal.setOnLoan(resultSet.getBoolean("ON_LOAN"));
-                newAnimal.setLoanLocation(resultSet.getString("LOAN_LOCATION"));
-
-                animals.add(newAnimal);
-            }
-            closeConnectionToDatabase();
+            animals.addAll(convertResultSetToAnimals(resultSet));
 
         } catch (Exception e) {
             System.err.println("There was a problem showing animals" + e.getClass().getName() + ": " + e.getMessage());
         }
         return animals;
     }
-
 
     public static boolean checkForAnimals() {
         boolean checkResult = false;
@@ -176,5 +162,82 @@ public class AnimalDataBase {
         }
         closeConnectionToDatabase();
         return checkResult;
+    }
+
+    public static void removeAnimal(int number) {
+        connectToDatabase();
+
+        String sql = "DELETE FROM ANIMAL WHERE NUMBER= ?";
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1,number);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+
+            System.out.println("Animal with id of " + number + " has been deleted");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        executeStatementAndClose(sql);
+
+    }
+
+    private static List<Animal> convertResultSetToAnimals(ResultSet resultSet) {
+        List<Animal> animalsList = new ArrayList<>();
+        //Create empty list of animals
+        //take in resultSet
+        //Create animal object to add results from resultSet to
+        //While next results add animal to list
+
+        try {
+            while (resultSet.next()) {
+                Animal newAnimal = new Animal();
+                newAnimal.setAnimalNumber(resultSet.getInt("NUMBER"));
+                newAnimal.setName(resultSet.getString("NAME"));
+                newAnimal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("HEALTH")));
+                newAnimal.setAge(resultSet.getInt("AGE"));
+                newAnimal.setEnclosure(resultSet.getString("enclosure"));
+                newAnimal.setOnLoan(resultSet.getBoolean("ON_LOAN"));
+                newAnimal.setLoanLocation(resultSet.getString("LOAN_LOCATION"));
+
+                animalsList.add(newAnimal);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return animalsList;
+    }
+
+    public static List<Animal> searchByAnimalType(String type) {
+
+        List<Animal> animalsList = new ArrayList<>();
+
+        connectToDatabase();
+
+        String sql = "SELECT * FROM ANIMAL WHERE TYPE= ?";
+
+        try {
+            //prepare statement
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, type);
+
+            //run prepared statement
+            //get resultSet
+            ResultSet resultSet = preparedStatement.executeQuery(sql);
+
+            //Convert records to animal
+           animalsList.addAll(convertResultSetToAnimals(resultSet));
+            //add animal to list of animals
+            //close statement
+            //return list of animals
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return animalsList;
     }
 }

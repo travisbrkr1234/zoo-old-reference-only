@@ -8,6 +8,9 @@ import java.util.regex.Pattern;
 /**
  * Created by carlos.ochoa on 2/1/2016.
  */
+
+//TODO How is it best to handle the deletion of animals in mysql?
+
 public class Main {
     static File fileLocation = new File("c:\\data\\animals.ser");
 
@@ -28,10 +31,8 @@ public class Main {
                 .append("-------------Please enter a choice---------------\n")
                 .append("1. Add animal------------------------------------\n")
                 .append("2. List animals----------------------------------\n")
-                .append("6. sel all animals-------------------------------\n")
                 .append("3. Remove animal---------------------------------\n")
                 .append("4. Find animal-----------------------------------\n")
-                .append("9. Initialize Database---------------------------\n")
                 .append("----Type e, exit, q, or quit to leave program----\n");
 
         boolean run = true;
@@ -55,14 +56,6 @@ public class Main {
 
                 case "4":
                     searchAnimals();
-                    break;
-
-                case "6":
-                    allMyAnimals();
-                    break;
-
-                case "9":
-                    AnimalDataBase.initializeDataBase();
                     break;
 
                 case "e":
@@ -260,17 +253,17 @@ public class Main {
 
     static void removeAnimal() {
 
-        Animals animals = Animals.getInstance();
-        if (!animals.isEmpty()) {
-            int choice;
-            listAnimals();
+        if (AnimalDataBase.checkForAnimals()) {
+            int number;
+
+            AnimalDataBase.showAnimalsInDB();
 
             Scanner input = new Scanner(System.in);
-            System.out.println("\nWhich animal do you want to remove?");
-            choice = input.nextInt();
+            System.out.println("\nPlease enter the number of the animal do you want to remove?");
+            number = input.nextInt();
 
             try {
-                animals.remove(choice);
+                AnimalDataBase.removeAnimal(number);
             }catch (Exception exception) {
                 System.out.println("Invalid choice, please select one of the following choices: ");
             }
@@ -282,45 +275,46 @@ public class Main {
     }
 
     static void searchAnimals() {
-        Animals animals = Animals.getInstance();
 
-        boolean flag = false;
 
-        if (!animals.isEmpty()) {
+        if (AnimalDataBase.checkForAnimals()) {
             System.out.println("Please enter an option to search by");
             System.out.println("1. -------------Search Type of Animal-------------");
             System.out.println("2. -------------Search Name of Animal-------------");
             Scanner searchChoice = new Scanner(System.in);
-            while (!flag) {
-                try {
-                    int animalSearchOption = searchChoice.nextInt();
+            try {
+                int animalSearchOption = searchChoice.nextInt();
 
-                    switch (animalSearchOption) {
-                        case 1:
-                            System.out.println("Please enter a type of animal to search by: ");
-                            Scanner animalTypeUserInput = new Scanner(System.in);
-                            String typeInput = animalTypeUserInput.nextLine();
-                            System.out.println("Running Search");
-                            animals.listByType(typeInput);
-                            flag = true;
-                            break;
+                switch (animalSearchOption) {
+                    case 1:
+                        //ask user which type of search they would like to run
+                        //take user choice as input from user
+                        //run animal search option to return list of animals by type
+                        //
 
-                        case 2:
-                            System.out.println("Please enter the name of the \nanimal that you would like to find.");
-                            Scanner animalNameUserInput = new Scanner(System.in);
-                            String nameInput = animalNameUserInput.nextLine();
-                            System.out.println("Running Search");
-                            animals.listByName(nameInput);
-                            flag = true;
-                            break;
+                        System.out.println("Please enter a type of animal to search by: ");
+                        Scanner animalTypeUserInput = new Scanner(System.in);
+                        String animalTypeInput = animalTypeUserInput.nextLine();
+                        List<Animal> animalList = AnimalDataBase.searchByAnimalType(animalTypeInput);
+                        System.out.println("Running Search");
+                        animalList.forEach(System.out::println);
 
-                        default:
-                            System.out.println("Please enter a valid option");
-                    }
-                } catch (InputMismatchException e) {
-                    searchChoice.nextLine();
+                        break;
 
+                    case 2:
+                        System.out.println("Please enter the name of the \nanimal that you would like to find.");
+                        Scanner animalNameUserInput = new Scanner(System.in);
+                        String nameInput = animalNameUserInput.nextLine();
+                        System.out.println("Running Search");
+                        animals.listByName(nameInput);
+                        break;
+
+                    default:
+                        System.out.println("Please enter a valid option");
                 }
+            } catch (InputMismatchException e) {
+                searchChoice.nextLine();
+
             }
         } else {
             transitionTimer("No animals exist, please add an animal first.", 5);
@@ -353,7 +347,4 @@ public class Main {
         }
     }
 
-    static void allMyAnimals() {
-        AnimalDataBase.selectAllAnimals();
-    }
 }
