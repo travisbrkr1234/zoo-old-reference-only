@@ -1,4 +1,3 @@
-import java.io.*;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -12,7 +11,6 @@ import java.util.regex.Pattern;
 //TODO How is it best to handle the deletion of animals in mysql?
 
 public class Main {
-    static File fileLocation = new File("c:\\data\\animals.ser");
 
     final static StringBuilder zooMenu = new StringBuilder();
 
@@ -23,7 +21,7 @@ public class Main {
             System.out.println("initialized database");
         }
 
-        zooMenu.append("--------------------------------------------------\n")
+         zooMenu.append("-------------------------------------------------\n")
                 .append("********000000*******0000*****0000***************\n")
                 .append("***********//*******0****0***0****0**************\n")
                 .append("**********000000*****0000*****0000***************\n")
@@ -33,6 +31,7 @@ public class Main {
                 .append("2. List animals----------------------------------\n")
                 .append("3. Remove animal---------------------------------\n")
                 .append("4. Find animal-----------------------------------\n")
+                .append("9. SelectAll Animals-----------------------------\n")
                 .append("----Type e, exit, q, or quit to leave program----\n");
 
         boolean run = true;
@@ -56,6 +55,10 @@ public class Main {
 
                 case "4":
                     searchAnimals();
+                    break;
+
+                case "9":
+                    AnimalDataBase.selectAllAnimals();
                     break;
 
                 case "e":
@@ -86,7 +89,6 @@ public class Main {
     }
 
     static void createAnimal() {
-        Animals animals = Animals.getInstance();
         Animal newAnimal = new Animal();
 
         Scanner inputAnimalName = new Scanner(System.in);
@@ -235,19 +237,8 @@ public class Main {
                         "Window");
             }
 
-            newAnimal.setAnimalNumber(animals.size() + 1);
-
-            animals.add(newAnimal);
             AnimalDataBase.saveAnimalToDB(newAnimal);
 
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(fileLocation);
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-
-                objectOutputStream.writeObject(newAnimal);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -256,7 +247,7 @@ public class Main {
         if (AnimalDataBase.checkForAnimals()) {
             int number;
 
-            AnimalDataBase.showAnimalsInDB();
+            AnimalDataBase.getAllAnimals();
 
             Scanner input = new Scanner(System.in);
             System.out.println("\nPlease enter the number of the animal do you want to remove?");
@@ -301,13 +292,13 @@ public class Main {
 
                         break;
 
-                    case 2:
-                        System.out.println("Please enter the name of the \nanimal that you would like to find.");
-                        Scanner animalNameUserInput = new Scanner(System.in);
-                        String nameInput = animalNameUserInput.nextLine();
-                        System.out.println("Running Search");
-                        animals.listByName(nameInput);
-                        break;
+//                    case 2:
+//                        System.out.println("Please enter the name of the \nanimal that you would like to find.");
+//                        Scanner animalNameUserInput = new Scanner(System.in);
+//                        String nameInput = animalNameUserInput.nextLine();
+//                        System.out.println("Running Search");
+//                        animals.listByName(nameInput);
+//                        break;
 
                     default:
                         System.out.println("Please enter a valid option");
@@ -317,7 +308,7 @@ public class Main {
 
             }
         } else {
-            transitionTimer("No animals exist, please add an animal first.", 5);
+            transitionTimer("No animals exist, please add an animal first.", 3);
         }
     }
 
@@ -338,12 +329,13 @@ public class Main {
         }
     }
 
-
     static void listAnimals() {
         if (AnimalDataBase.checkForAnimals()) {
-            List<Animal> animals = AnimalDataBase.showAnimalsInDB();
+            List<Animal> animals = AnimalDataBase.getAllAnimals();
 
             animals.forEach(System.out::println);
+        } else {
+            transitionTimer("No animals exist yet, please add one.", 3);
         }
     }
 

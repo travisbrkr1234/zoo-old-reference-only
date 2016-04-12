@@ -14,7 +14,7 @@ public class AnimalDataBase {
 
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:animals.db");
-            System.out.println("Connected to database successfully");
+//            System.out.println("Connected to database successfully");
 
             statement = connection.createStatement();
         } catch (Exception e) {
@@ -22,127 +22,23 @@ public class AnimalDataBase {
         }
     }
 
-    static private void closeConnectionToDatabase() {
-        try {
-            connection.close();
-        } catch (SQLException e1) {
-            System.out.println("Unable to close connection to database");
-        }
-    }
+    private static boolean checkForAnimalTable(){
+        boolean tableExists = true;
+        connectToDatabase();
 
-    private static void executeStatementAndClose(String sql) {
+        String sql = "SELECT * FROM sqlite_master WHERE name ='ANIMAL' and type='table'";
         try {
-            statement.execute(sql);
-            statement.close();
-            closeConnectionToDatabase();
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                tableExists = true;
+            } else {
+                tableExists = false;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
 
-    static public void initializeDataBase() {
-
-        {
-            final String sql = "CREATE TABLE ANIMAL " +
-                    "(NUMBER INT PRIMARY KEY     NOT NULL," +
-                    " NAME      TEXT    NOT NULL, " +
-                    " TYPE      CHAR(50)     NOT NULL, " +
-                    " HEALTH        CHAR(50), " +
-                    " AGE       INT(11), " +
-                    " ENCLOSURE     CHAR(50), " +
-                    " ON_LOAN       BOOLEAN, " +
-                    " LOAN_LOCATION     CHAR(50))";
-
-            try {
-                connectToDatabase();
-                executeStatementAndClose(sql);
-            } catch (Exception e) {
-                System.out.println(e);
-                closeConnectionToDatabase();
-            }
-            System.out.println("Table created successfully");
-        }
-    }
-
-    static public void selectAllAnimals() {
-        /**
-         * Select all animals from animal database
-         */
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:animals.db");
-            connection.setAutoCommit(false);
-            System.out.println("Opened database successfully");
-
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM ANIMAL;");
-            while (resultSet.next()) {
-                int animalNumber = resultSet.getInt("NUMBER");
-                String name = resultSet.getString("NAME");
-                String health = resultSet.getString("HEALTH");
-                int age = resultSet.getInt("AGE");
-                String enclosure = resultSet.getString("enclosure");
-                boolean onLoan = resultSet.getBoolean("ON_LOAN");
-                String loanLocation = resultSet.getString("LOAN_LOCATION");
-
-                System.out.println(" ");
-                System.out.println("ID = " + animalNumber);
-                System.out.println("Name = " + name);
-                System.out.println("Health = " + health);
-                System.out.println("Age = " + age);
-                System.out.println("Enclosure = " + enclosure);
-                System.out.println("On Loan = " + onLoan);
-                System.out.println("Loan Location = " + loanLocation);
-                System.out.println(" ");
-            }
-            statement.close();
-            connection.commit();
-            connection.close();
-
-        } catch (Exception e) {
-            System.err.println("Unable to select animals" + e.getClass().getName() + ": " + e.getMessage());
-        }
-    }
-
-    public static void saveAnimalToDB(Animal newAnimal) {
-
-        String sql = "INSERT INTO ANIMAL (NUMBER, NAME, TYPE, HEALTH, AGE, ENCLOSURE, ON_LOAN, LOAN_LOCATION) " +
-                "VALUES (' " +
-                newAnimal.getAnimalNumber() + " ',' " +
-                newAnimal.getName() + "', '" +
-                newAnimal.getType() + "', '" +
-                newAnimal.getHealth() + "', '" +
-                newAnimal.getAge() + "', '" +
-                newAnimal.getEnclosure() + "', '" +
-                newAnimal.isOnLoan() + "', '" + newAnimal.getLoanLocation() + "' ); ";
-
-        try {
-            connectToDatabase();
-            executeStatementAndClose(sql);
-        } catch (Exception e) {
-            System.err.println("Unable to save animals" + e.getClass().getName() + ": " + e.getMessage());
-        }
-        System.out.println("Records created successfully");
-    }
-
-    public static List<Animal> showAnimalsInDB() {
-        List<Animal> animals = new ArrayList<>();
-
-        String sql = "SELECT * FROM ANIMAL;";
-
-        try {
-            connectToDatabase();
-
-            ResultSet resultSet = statement.executeQuery(sql);
-
-            animals.addAll(convertResultSetToAnimals(resultSet));
-
-        } catch (Exception e) {
-            System.err.println("There was a problem showing animals" + e.getClass().getName() + ": " + e.getMessage());
-        }
-        return animals;
+        return tableExists;
     }
 
     public static boolean checkForAnimals() {
@@ -164,25 +60,67 @@ public class AnimalDataBase {
         return checkResult;
     }
 
-    public static void removeAnimal(int number) {
-        connectToDatabase();
-
-        String sql = "DELETE FROM ANIMAL WHERE NUMBER= ?";
-
+    private static void executeStatementAndClose(String sql) {
         try {
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1,number);
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
-
-            System.out.println("Animal with id of " + number + " has been deleted");
-
+            statement.execute(sql);
+            statement.close();
+            closeConnectionToDatabase();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
 
-        executeStatementAndClose(sql);
+    private static void closeConnectionToDatabase() {
+        try {
+            connection.close();
+        } catch (SQLException e1) {
+            System.out.println("Unable to close connection to database");
+        }
+    }
 
+    static public void initializeDataBase() {
+        if (!checkForAnimalTable()) {
+            final String sql = "CREATE TABLE ANIMAL " +
+                    "(NUMBER INTEGER PRIMARY KEY    AUTOINCREMENT     NOT NULL," +
+                    " NAME      TEXT    NOT NULL, " +
+                    " TYPE      CHAR(50)     NOT NULL, " +
+                    " HEALTH        CHAR(50), " +
+                    " AGE       INT(11), " +
+                    " ENCLOSURE     CHAR(50), " +
+                    " ON_LOAN       BOOLEAN, " +
+                    " LOAN_LOCATION     CHAR(50))";
+
+            try {
+                connectToDatabase();
+                executeStatementAndClose(sql);
+            } catch (Exception e) {
+                System.out.println(e);
+                closeConnectionToDatabase();
+            }
+            System.out.println("Table created successfully");
+        } else {
+            System.out.println("Table already exists");
+        }
+    }
+
+    public static void saveAnimalToDB(Animal newAnimal) {
+
+        String sql = "INSERT INTO ANIMAL (NAME, TYPE, HEALTH, AGE, ENCLOSURE, ON_LOAN, LOAN_LOCATION) " +
+                "VALUES (' " +
+                newAnimal.getName() + "', '" +
+                newAnimal.getType() + "', '" +
+                newAnimal.getHealth() + "', '" +
+                newAnimal.getAge() + "', '" +
+                newAnimal.getEnclosure() + "', '" +
+                newAnimal.isOnLoan() + "', '" + newAnimal.getLoanLocation() + "' ); ";
+
+        try {
+            connectToDatabase();
+            executeStatementAndClose(sql);
+        } catch (Exception e) {
+            System.err.println("Unable to save animals" + e.getClass().getName() + ": " + e.getMessage());
+        }
+        System.out.println("Records created successfully");
     }
 
     private static List<Animal> convertResultSetToAnimals(ResultSet resultSet) {
@@ -212,6 +150,45 @@ public class AnimalDataBase {
         return animalsList;
     }
 
+    public static List<Animal> getAllAnimals() {
+        List<Animal> animals = new ArrayList<>();
+
+        String sql = "SELECT * FROM ANIMAL;";
+
+        try {
+            connectToDatabase();
+
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            animals.addAll(convertResultSetToAnimals(resultSet));
+
+        } catch (Exception e) {
+            System.err.println("There was a problem showing animals" + e.getClass().getName() + ": " + e.getMessage());
+        }
+        return animals;
+    }
+
+    public static void removeAnimal(int number) {
+        connectToDatabase();
+
+        String sql = "DELETE FROM ANIMAL WHERE NUMBER= ?";
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1,number);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+
+            System.out.println("Animal with id of " + number + " has been deleted");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        executeStatementAndClose(sql);
+
+    }
+
     public static List<Animal> searchByAnimalType(String type) {
 
         List<Animal> animalsList = new ArrayList<>();
@@ -227,7 +204,7 @@ public class AnimalDataBase {
 
             //run prepared statement
             //get resultSet
-            ResultSet resultSet = preparedStatement.executeQuery(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             //Convert records to animal
            animalsList.addAll(convertResultSetToAnimals(resultSet));
@@ -239,5 +216,49 @@ public class AnimalDataBase {
             e.printStackTrace();
         }
         return animalsList;
+    }
+
+    static public void selectAllAnimals() {
+        /**
+         * Select all animals from animal database
+         */
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:animals.db");
+            connection.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM ANIMAL;");
+            while (resultSet.next()) {
+                int animalNumber = resultSet.getInt("NUMBER");
+                String name = resultSet.getString("NAME");
+                String type = resultSet.getString("TYPE");
+                String health = resultSet.getString("HEALTH");
+                int age = resultSet.getInt("AGE");
+                String enclosure = resultSet.getString("enclosure");
+                boolean onLoan = resultSet.getBoolean("ON_LOAN");
+                String loanLocation = resultSet.getString("LOAN_LOCATION");
+
+                System.out.println(" ");
+                System.out.println("ID = " + animalNumber);
+                System.out.println("Name = " + name);
+                System.out.println("Type = " + type);
+                System.out.println("Health = " + health);
+                System.out.println("Age = " + age);
+                System.out.println("Enclosure = " + enclosure);
+                System.out.println("On Loan = " + onLoan);
+                System.out.println("Loan Location = " + loanLocation);
+                System.out.println(" ");
+            }
+            statement.close();
+            connection.commit();
+            connection.close();
+
+        } catch (Exception e) {
+            System.err.println("Unable to select animals" + e.getClass().getName() + ": " + e.getMessage());
+        }
     }
 }

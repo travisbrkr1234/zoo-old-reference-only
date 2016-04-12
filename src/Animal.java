@@ -82,20 +82,28 @@ public class Animal implements Serializable {
     public String toString() {
         return String.valueOf(new StringBuffer("Animal Number: ")
                 .append(this.animalNumber)
+                .append("|")
                 .append("Name: ")
                 .append(this.name)
+                .append("|")
                 .append("Type: ")
                 .append(this.type)
+                .append("|")
                 .append("Health: ")
                 .append(this.health)
+                .append("|")
                 .append("Age: ")
                 .append(this.age)
+                .append("|")
                 .append("On loan: ")
                 .append(this.onLoan)
+                .append("|")
                 .append("Enclosure: ")
                 .append(this.enclosure)
+                .append("|")
                 .append("Loan location: ")
-                .append(this.loanLocation));
+                .append(this.loanLocation)
+                .append("|"));
     }
 
 }
