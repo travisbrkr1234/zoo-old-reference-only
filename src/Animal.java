@@ -8,6 +8,7 @@ public class Animal implements Serializable {
     private int animalNumber;
     private String type;
     private String name;
+    private String ownerName;
     private AnimalHealthStatus health;
     private int age;
     private String enclosure;
@@ -36,6 +37,14 @@ public class Animal implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 
     public AnimalHealthStatus getHealth() {
@@ -85,6 +94,9 @@ public class Animal implements Serializable {
                 .append(" | ")
                 .append("Name: ")
                 .append(this.name)
+                .append(" | ")
+                .append("Owner name: ")
+                .append(this.ownerName)
                 .append(" | ")
                 .append("Type: ")
                 .append(this.type)

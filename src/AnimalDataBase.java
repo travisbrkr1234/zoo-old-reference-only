@@ -83,6 +83,7 @@ public class AnimalDataBase {
             final String sql = "CREATE TABLE ANIMAL " +
                     "(NUMBER INTEGER PRIMARY KEY    AUTOINCREMENT     NOT NULL," +
                     " NAME      TEXT    NOT NULL, " +
+                    " OWNER_NAME    CHAR(50)    NOT NULL, " +
                     " TYPE      CHAR(50)     NOT NULL, " +
                     " HEALTH        CHAR(50), " +
                     " AGE       INT(11), " +
@@ -105,9 +106,10 @@ public class AnimalDataBase {
 
     public static void saveAnimalToDB(Animal newAnimal) {
 
-        String sql = "INSERT INTO ANIMAL (NAME, TYPE, HEALTH, AGE, ENCLOSURE, ON_LOAN, LOAN_LOCATION) " +
+        String sql = "INSERT INTO ANIMAL (NAME, OWNER_NAME, TYPE, HEALTH, AGE, ENCLOSURE, ON_LOAN, LOAN_LOCATION) " +
                 "VALUES (' " +
                 newAnimal.getName() + "', '" +
+                newAnimal.getOwnerName() + "', '" +
                 newAnimal.getType() + "', '" +
                 newAnimal.getHealth() + "', '" +
                 newAnimal.getAge() + "', '" +
@@ -135,6 +137,7 @@ public class AnimalDataBase {
                 Animal newAnimal = new Animal();
                 newAnimal.setAnimalNumber(resultSet.getInt("NUMBER"));
                 newAnimal.setName(resultSet.getString("NAME"));
+                newAnimal.setOwnerName(resultSet.getString("OWNER_NAME"));
                 newAnimal.setType(resultSet.getString("TYPE"));
                 newAnimal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("HEALTH")));
                 newAnimal.setAge(resultSet.getInt("AGE"));

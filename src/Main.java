@@ -88,28 +88,37 @@ public class Main {
         return matcher.find();
     }
 
-    static void createAnimal() {
-        Animal newAnimal = new Animal();
+    private static String setAName(String subject) {
+        String name;
+        String verifiedName = "";
+        Scanner scanner = new Scanner(System.in);
 
-        Scanner inputAnimalName = new Scanner(System.in);
         final String regexNamePattern = "\\b[a-zA-Z]+\\b";
         Pattern namePattern = Pattern.compile(regexNamePattern);
 
         boolean flag = false;
 
         while (!flag) {
-            System.out.println("Please enter the animal's name: ");
-            String animalName = inputAnimalName.nextLine();
-            Matcher matcher = namePattern.matcher(animalName);
+            System.out.println("Please enter an " + subject + " name: ");
+            name = scanner.nextLine();
+            Matcher matcher = namePattern.matcher(name);
 
             if (matcher.find()) {
-                newAnimal.setName(animalName);
+                verifiedName = name;
                 flag = true;
             } else {
-                System.out.println("Please enter the animal's name such as 'Larry' ");
+                System.out.println("Please enter an " + subject + " name such as 'Larry' ");
             }
 
         }
+        return verifiedName;
+    }
+
+    static void createAnimal() {
+        Animal newAnimal = new Animal();
+
+        newAnimal.setName(setAName("animal"));
+        newAnimal.setOwnerName(setAName("owner"));
 
         Scanner animalTypeInput = new Scanner(System.in);
 
