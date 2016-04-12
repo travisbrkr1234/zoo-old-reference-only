@@ -135,6 +135,7 @@ public class AnimalDataBase {
                 Animal newAnimal = new Animal();
                 newAnimal.setAnimalNumber(resultSet.getInt("NUMBER"));
                 newAnimal.setName(resultSet.getString("NAME"));
+                newAnimal.setType(resultSet.getString("TYPE"));
                 newAnimal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("HEALTH")));
                 newAnimal.setAge(resultSet.getInt("AGE"));
                 newAnimal.setEnclosure(resultSet.getString("enclosure"));
@@ -163,7 +164,7 @@ public class AnimalDataBase {
             animals.addAll(convertResultSetToAnimals(resultSet));
 
         } catch (Exception e) {
-            System.err.println("There was a problem showing animals" + e.getClass().getName() + ": " + e.getMessage());
+            System.err.println("There was a problem getting the list of animals" + e.getClass().getName() + ": " + e.getMessage());
         }
         return animals;
     }
@@ -207,7 +208,7 @@ public class AnimalDataBase {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             //Convert records to animal
-           animalsList.addAll(convertResultSetToAnimals(resultSet));
+            animalsList.addAll(convertResultSetToAnimals(resultSet));
             //add animal to list of animals
             //close statement
             //return list of animals
