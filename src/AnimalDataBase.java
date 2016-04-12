@@ -81,15 +81,15 @@ public class AnimalDataBase {
     static public void initializeDataBase() {
         if (!checkForAnimalTable()) {
             final String sql = "CREATE TABLE ANIMAL " +
-                    "(NUMBER INTEGER PRIMARY KEY    AUTOINCREMENT     NOT NULL," +
-                    " NAME      TEXT    NOT NULL, " +
-                    " OWNER_NAME    CHAR(50)    NOT NULL, " +
-                    " TYPE      CHAR(50)     NOT NULL, " +
-                    " HEALTH        CHAR(50), " +
-                    " AGE       INT(11), " +
-                    " ENCLOSURE     CHAR(50), " +
-                    " ON_LOAN       BOOLEAN, " +
-                    " LOAN_LOCATION     CHAR(50))";
+                    "(Number INTEGER PRIMARY KEY    AUTOINCREMENT     NOT NULL," +
+                    " Name      TEXT    NOT NULL, " +
+                    " Owner_name    CHAR(50)    NOT NULL, " +
+                    " Type      CHAR(50)     NOT NULL, " +
+                    " Health        CHAR(50), " +
+                    " Age       INT(11), " +
+                    " Enclosure     CHAR(50), " +
+                    " On_loan       BOOLEAN, " +
+                    " Loan_location     CHAR(50))";
 
             try {
                 connectToDatabase();
@@ -106,7 +106,7 @@ public class AnimalDataBase {
 
     public static void saveAnimalToDB(Animal newAnimal) {
 
-        String sql = "INSERT INTO ANIMAL (NAME, OWNER_NAME, TYPE, HEALTH, AGE, ENCLOSURE, ON_LOAN, LOAN_LOCATION) " +
+        String sql = "INSERT INTO ANIMAL (Name, Owner_name, Type, Health, Age, Enclosure, On_loan, Loan_location) " +
                 "VALUES (' " +
                 newAnimal.getName() + "', '" +
                 newAnimal.getOwnerName() + "', '" +
@@ -135,15 +135,15 @@ public class AnimalDataBase {
         try {
             while (resultSet.next()) {
                 Animal newAnimal = new Animal();
-                newAnimal.setAnimalNumber(resultSet.getInt("NUMBER"));
-                newAnimal.setName(resultSet.getString("NAME"));
-                newAnimal.setOwnerName(resultSet.getString("OWNER_NAME"));
-                newAnimal.setType(resultSet.getString("TYPE"));
-                newAnimal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("HEALTH")));
-                newAnimal.setAge(resultSet.getInt("AGE"));
-                newAnimal.setEnclosure(resultSet.getString("enclosure"));
-                newAnimal.setOnLoan(resultSet.getBoolean("ON_LOAN"));
-                newAnimal.setLoanLocation(resultSet.getString("LOAN_LOCATION"));
+                newAnimal.setAnimalNumber(resultSet.getInt("Number"));
+                newAnimal.setName(resultSet.getString("Name"));
+                newAnimal.setOwnerName(resultSet.getString("Owner_name"));
+                newAnimal.setType(resultSet.getString("Type"));
+                newAnimal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("Health")));
+                newAnimal.setAge(resultSet.getInt("Age"));
+                newAnimal.setEnclosure(resultSet.getString("Enclosure"));
+                newAnimal.setOnLoan(resultSet.getBoolean("On_loan"));
+                newAnimal.setLoanLocation(resultSet.getString("Loan_location"));
 
                 animalsList.add(newAnimal);
             }
@@ -222,6 +222,29 @@ public class AnimalDataBase {
         return animalsList;
     }
 
+    public static List<Animal> searchByAnimalName(String name) {
+
+        List<Animal> animalsList = new ArrayList<>();
+
+        connectToDatabase();
+
+        String sql = "SELECT * FROM ANIMAL WHERE Name= ?";
+
+        try {
+            //prepare statement
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, name);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            animalsList.addAll(convertResultSetToAnimals(resultSet));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return animalsList;
+    }
+
     static public void selectAllAnimals() {
         /**
          * Select all animals from animal database
@@ -237,18 +260,20 @@ public class AnimalDataBase {
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM ANIMAL;");
             while (resultSet.next()) {
-                int animalNumber = resultSet.getInt("NUMBER");
-                String name = resultSet.getString("NAME");
-                String type = resultSet.getString("TYPE");
-                String health = resultSet.getString("HEALTH");
-                int age = resultSet.getInt("AGE");
-                String enclosure = resultSet.getString("enclosure");
-                boolean onLoan = resultSet.getBoolean("ON_LOAN");
-                String loanLocation = resultSet.getString("LOAN_LOCATION");
+                int animalNumber = resultSet.getInt("Number");
+                String name = resultSet.getString("Name");
+                String ownerName = resultSet.getString("Owner_name");
+                String type = resultSet.getString("Type");
+                String health = resultSet.getString("Health");
+                int age = resultSet.getInt("Age");
+                String enclosure = resultSet.getString("Enclosure");
+                boolean onLoan = resultSet.getBoolean("On_loan");
+                String loanLocation = resultSet.getString("Loan_location");
 
                 System.out.println(" ");
                 System.out.println("ID = " + animalNumber);
                 System.out.println("Name = " + name);
+                System.out.println("Owner name = " + ownerName);
                 System.out.println("Type = " + type);
                 System.out.println("Health = " + health);
                 System.out.println("Age = " + age);

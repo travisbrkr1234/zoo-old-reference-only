@@ -88,32 +88,6 @@ public class Main {
         return matcher.find();
     }
 
-    private static String setAName(String subject) {
-        String name;
-        String verifiedName = "";
-        Scanner scanner = new Scanner(System.in);
-
-        final String regexNamePattern = "\\b[a-zA-Z]+\\b";
-        Pattern namePattern = Pattern.compile(regexNamePattern);
-
-        boolean flag = false;
-
-        while (!flag) {
-            System.out.println("Please enter an " + subject + " name: ");
-            name = scanner.nextLine();
-            Matcher matcher = namePattern.matcher(name);
-
-            if (matcher.find()) {
-                verifiedName = name;
-                flag = true;
-            } else {
-                System.out.println("Please enter an " + subject + " name such as 'Larry' ");
-            }
-
-        }
-        return verifiedName;
-    }
-
     static void createAnimal() {
         Animal newAnimal = new Animal();
 
@@ -276,7 +250,6 @@ public class Main {
 
     static void searchAnimals() {
 
-
         if (AnimalDataBase.checkForAnimals()) {
             System.out.println("Please enter an option to search by");
             System.out.println("1. -------------Search Type of Animal-------------");
@@ -301,13 +274,14 @@ public class Main {
 
                         break;
 
-//                    case 2:
-//                        System.out.println("Please enter the name of the \nanimal that you would like to find.");
-//                        Scanner animalNameUserInput = new Scanner(System.in);
-//                        String nameInput = animalNameUserInput.nextLine();
-//                        System.out.println("Running Search");
-//                        animals.listByName(nameInput);
-//                        break;
+                    case 2:
+                        System.out.println("Please enter the name of the \nanimal that you would like to find.");
+                        Scanner animalNameUserInput = new Scanner(System.in);
+                        String nameInput = animalNameUserInput.nextLine();
+                        List<Animal> animalList2 = AnimalDataBase.searchByAnimalName(nameInput);
+                        System.out.println("Running Search");
+                        animalList2.forEach(System.out::println);
+                        break;
 
                     default:
                         System.out.println("Please enter a valid option");
@@ -319,6 +293,32 @@ public class Main {
         } else {
             transitionTimer("No animals exist, please add an animal first.", 3);
         }
+    }
+
+    private static String setAName(String subject) {
+        String name;
+        String verifiedName = "";
+        Scanner scanner = new Scanner(System.in);
+
+        final String regexNamePattern = "\\b[a-zA-Z]+\\b";
+        Pattern namePattern = Pattern.compile(regexNamePattern);
+
+        boolean flag = false;
+
+        while (!flag) {
+            System.out.println("Please enter an " + subject + " name: ");
+            name = scanner.nextLine();
+            Matcher matcher = namePattern.matcher(name);
+
+            if (matcher.find()) {
+                verifiedName = name;
+                flag = true;
+            } else {
+                System.out.println("Please enter an " + subject + " name such as 'Larry' ");
+            }
+
+        }
+        return verifiedName;
     }
 
     static void transitionTimer(String message, int timeout) {
