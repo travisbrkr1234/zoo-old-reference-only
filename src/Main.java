@@ -313,8 +313,8 @@ public class Main {
         String verifiedName = "";
         Scanner scanner = new Scanner(System.in);
 
-//        final String regexNamePattern = "\\b[a-zA-Z]+\\b";
-        final String regexNamePattern = "(<script(\\s|\\S)*?<\\/script>)|(<style(\\s|\\S)*?<\\/style>)|(<!--(\\s|\\S)*?-->)|(<\\/?(\\s|\\S)*?>)";
+        final String regexNamePattern = "\\b[a-zA-Z]+\\b";
+//        final String regexNamePattern = "(<script(\\s|\\S)*?<\\/script>)|(<style(\\s|\\S)*?<\\/style>)|(<!--(\\s|\\S)*?-->)|(<\\/?(\\s|\\S)*?>)";
         Pattern namePattern = Pattern.compile(regexNamePattern);
 
         boolean flag = false;
