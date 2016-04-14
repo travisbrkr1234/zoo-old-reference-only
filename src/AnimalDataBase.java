@@ -85,6 +85,7 @@ public class AnimalDataBase {
                     " Name      TEXT    NOT NULL, " +
                     " Owner_name    CHAR(50)    NOT NULL, " +
                     " Type      CHAR(50)     NOT NULL, " +
+                    " Gender      CHAR(50)     NOT NULL, " +
                     " Health        CHAR(50), " +
                     " Age       INT(11), " +
                     " Enclosure     CHAR(50), " +
@@ -106,11 +107,12 @@ public class AnimalDataBase {
 
     public static void saveAnimalToDB(Animal newAnimal) {
 
-        String sql = "INSERT INTO ANIMAL (Name, Owner_name, Type, Health, Age, Enclosure, On_loan, Loan_location) " +
+        String sql = "INSERT INTO ANIMAL (Name, Owner_name, Type, Gender, Health, Age, Enclosure, On_loan, Loan_location) " +
                 "VALUES (' " +
                 newAnimal.getName() + "', '" +
                 newAnimal.getOwnerName() + "', '" +
                 newAnimal.getType() + "', '" +
+                newAnimal.getGender() + "', '" +
                 newAnimal.getHealth() + "', '" +
                 newAnimal.getAge() + "', '" +
                 newAnimal.getEnclosure() + "', '" +
@@ -139,10 +141,11 @@ public class AnimalDataBase {
                 newAnimal.setName(resultSet.getString("Name"));
                 newAnimal.setOwnerName(resultSet.getString("Owner_name"));
                 newAnimal.setType(resultSet.getString("Type"));
+                newAnimal.setGender(resultSet.getString("Gender"));
                 newAnimal.setHealth(AnimalHealthStatus.valueOf(resultSet.getString("Health")));
                 newAnimal.setAge(resultSet.getInt("Age"));
                 newAnimal.setEnclosure(resultSet.getString("Enclosure"));
-                newAnimal.setOnLoan(resultSet.getBoolean("On_loan"));
+                newAnimal.setOnLoan(Boolean.parseBoolean(resultSet.getString("On_loan")));
                 newAnimal.setLoanLocation(resultSet.getString("Loan_location"));
 
                 animalsList.add(newAnimal);

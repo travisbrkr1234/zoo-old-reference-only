@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
  * Created by carlos.ochoa on 2/1/2016.
  */
 
-//TODO How is it best to handle the deletion of animals in mysql?
-
 public class Main {
 
     final static StringBuilder zooMenu = new StringBuilder();
@@ -94,6 +92,21 @@ public class Main {
         newAnimal.setName(setAName("animal"));
         newAnimal.setOwnerName(setAName("owner"));
 
+        Scanner animalGenderInput = new Scanner(System.in);
+        boolean stopLoop = false;
+        while (!stopLoop) {
+            System.out.println("Please enter gender, such as 'm' or 'f'");
+            String animalGender = animalGenderInput.nextLine().toLowerCase();
+
+            if (animalGender.equals("m")) {
+                newAnimal.setGender("male");
+                stopLoop = true;
+            } if (animalGender.equals("f")) {
+                newAnimal.setGender("female");
+                stopLoop = true;
+            }
+        }
+
         Scanner animalTypeInput = new Scanner(System.in);
 
         boolean something = false;
@@ -107,7 +120,6 @@ public class Main {
             } else {
                 System.out.println("Please enter a valid type, such as\n hipa-potamus");
             }
-
 
         }
 
@@ -160,18 +172,19 @@ public class Main {
 
         /*Animal Loan Status*/
         Scanner inputAnimalLoanStatus = new Scanner(System.in);
-
         boolean userInputAnimalLoanStatusSet = false;
 
         while (!userInputAnimalLoanStatusSet) {
-            System.out.println("Is the animal on loan to another zoo? Enter 'true' or 'false' ");
+            System.out.println("Is the animal on loan to another zoo? Enter 'yes' or 'no' ");
             String animalLoanStatus = inputAnimalLoanStatus.nextLine();
 
-            if (animalLoanStatus.equalsIgnoreCase("true") || animalLoanStatus.equalsIgnoreCase("false")) {
-                newAnimal.setOnLoan(Boolean.parseBoolean(animalLoanStatus));
+            if (animalLoanStatus.equalsIgnoreCase("yes")) {
+                newAnimal.setOnLoan(true);
                 userInputAnimalLoanStatusSet = true;
-            } else {
-                System.out.println("Is the animal on loan to another zoo? Enter 'true' or 'false' ");
+            }
+            else if (animalLoanStatus.equalsIgnoreCase("no")) {
+                newAnimal.setOnLoan(false);
+                userInputAnimalLoanStatusSet = true;
             }
 
         }
@@ -300,32 +313,32 @@ public class Main {
         String verifiedName = "";
         Scanner scanner = new Scanner(System.in);
 
-        final String regexNamePattern = "\\b[a-zA-Z]+\\b";
+//        final String regexNamePattern = "\\b[a-zA-Z]+\\b";
+        final String regexNamePattern = "(<script(\\s|\\S)*?<\\/script>)|(<style(\\s|\\S)*?<\\/style>)|(<!--(\\s|\\S)*?-->)|(<\\/?(\\s|\\S)*?>)";
         Pattern namePattern = Pattern.compile(regexNamePattern);
 
         boolean flag = false;
 
         while (!flag) {
-            System.out.println("Please enter an " + subject + " name: ");
+            System.out.println("Please enter an " + subject + " name ex.'Larry'");
             name = scanner.nextLine();
             Matcher matcher = namePattern.matcher(name);
 
-            if (matcher.find()) {
+            if (!matcher.find()) {
                 verifiedName = name;
                 flag = true;
-            } else {
-                System.out.println("Please enter an " + subject + " name such as 'Larry' ");
             }
-
         }
         return verifiedName;
     }
 
+
+    /**
+     * @param message Used to pass a message to the console for the transition
+     * @param timeout Timeout transition in seconds
+     */
     static void transitionTimer(String message, int timeout) {
-        /**
-         * @param message Used to pass a message to the console for the transition
-         * @param timeout Timout transition in seconds
-         */
+
         try {
             System.out.println(message);
             System.out.println("returning to main menu in: ");
