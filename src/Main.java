@@ -314,7 +314,6 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         final String regexNamePattern = "\\b[a-zA-Z]+\\b";
-//        final String regexNamePattern = "(<script(\\s|\\S)*?<\\/script>)|(<style(\\s|\\S)*?<\\/style>)|(<!--(\\s|\\S)*?-->)|(<\\/?(\\s|\\S)*?>)";
         Pattern namePattern = Pattern.compile(regexNamePattern);
 
         boolean flag = false;
@@ -324,14 +323,13 @@ public class Main {
             name = scanner.nextLine();
             Matcher matcher = namePattern.matcher(name);
 
-            if (!matcher.find()) {
+            if (matcher.find()) {
                 verifiedName = name;
                 flag = true;
             }
         }
         return verifiedName;
     }
-
 
     /**
      * @param message Used to pass a message to the console for the transition
